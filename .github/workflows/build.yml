@@ -1,0 +1,44 @@
+name: Build MAT267 TI-84 CE
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # ── 1. checkout your code ─────────────────────────────────────
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # ── 2. install CE toolchain (official pre-built release) ──────
+    - name: Install CE toolchain
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y cmake python3 python3-pip wget
+        # Download official pre-built CE toolchain
+        wget -q https://github.com/CE-Programming/toolchain/releases/latest/download/CEdev-Linux.tar.gz
+        sudo tar xf CEdev-Linux.tar.gz -C /usr/local --strip-components=1
+        echo "/usr/local/bin" >> $GITHUB_PATH
+        # Verify
+        cedev-config --version || echo "cedev installed"
+
+    # ── 3. build the .8xp ─────────────────────────────────────────
+    - name: Build mat267ti.8xp
+      run: |
+        export CE_TOOLCHAIN_DIR=/usr/local
+        mkdir build && cd build
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=/usr/local/cmake/toolchain.cmake
+        make -j$(nproc)
+        ls -lh *.8xp || ls -lh **/*.8xp
+
+    # ── 4. upload as downloadable artifact ───────────────────────
+    - name: Upload 8xp
+      uses: actions/upload-artifact@v4
+      with:
+        name: MAT267TI
+        path: "**/*.8xp"
+        retention-days: 30
