@@ -29,11 +29,14 @@ jobs:
     # ── 3. build the .8xp ─────────────────────────────────────────
     - name: Build mat267ti.8xp
       run: |
-        export CE_TOOLCHAIN_DIR=/usr/local
+        # Find where the toolchain actually installed
+        find /usr/local -name "*.cmake" 2>/dev/null | grep -i "ce\|toolchain" | head -20
+        TCFILE=$(find /usr/local -name "CEdev.cmake" -o -name "toolchain.cmake" 2>/dev/null | head -1)
+        echo "Found toolchain at: $TCFILE"
         mkdir build && cd build
-        cmake .. -DCMAKE_TOOLCHAIN_FILE=/usr/local/cmake/toolchain.cmake
+        cmake .. -DCMAKE_TOOLCHAIN_FILE="$TCFILE"
         make -j$(nproc)
-        ls -lh *.8xp || ls -lh **/*.8xp
+        find .. -name "*.8xp" 2>/dev/null
 
     # ── 4. upload as downloadable artifact ───────────────────────
     - name: Upload 8xp
