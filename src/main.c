@@ -14,6 +14,17 @@ static const gfx_color_t PALETTE[] = {
 };
 
 int main(void) {
+
+    static const gfx_color_t PALETTE[] = {
+    gfx_RGBTo1555(0,   0,   0),   /* 0: black  — C_FG     */
+    gfx_RGBTo1555(0,  30,  80),   /* 1: navy   — C_HEADER */
+    gfx_RGBTo1555(30, 80, 180),   /* 2: blue   — C_HILIGHT*/
+    gfx_RGBTo1555(40, 40,  40),   /* 3: dark   — C_SOFTBAR*/
+    gfx_RGBTo1555(0,  80, 160),   /* 4: accent — C_ACCENT */
+    gfx_RGBTo1555(180, 0,   0),   /* 5: red    — C_ERR    */
+    gfx_RGBTo1555(120,120, 120),  /* 6: gray   — C_GRAY   */
+};
+    
     /* ── init graphics ── */
     gfx_Begin();
     gfx_SetPalette(PALETTE, sizeof PALETTE, 0);
